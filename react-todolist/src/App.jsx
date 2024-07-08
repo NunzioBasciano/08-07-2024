@@ -1,34 +1,55 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import styles from './App.module.css'
+
+/* Lo mettiamo fuori dalla funzione App in modo tale da evitare che ogni volta che verrà rirenderizzata la pagina venga ridichiarata la costante  */
+const initialTodos = [{
+  id: self.crypto.randomUUID(),
+  title: 'Qui visualizzi le tue TODO'
+}]
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [todos, setTodos] = useState(initialTodos);
+  const [input, setInput] = useState('');
+
+  /* */
+  function addTodo() {
+    if (!input.length) return;
+    const id = self.crypto.randomUUID();
+    const title = input;
+    setTodos([...todos, { id, title }]); // sarebbe come scrivere id : id, title : title
+    setInput('')
+  }
+
+  function deleteTodo(e) {
+    const newList = todos.filter(todo => todo.id !== e.target.id);
+    setTodos(newList);
+
+  }
+
+  function handleChange(e) {
+    setInput(e.target.value);
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+
+    <div className={styles.container}>
+      <div className={styles.container_input_section}>
+        <input className={styles.input_section_input} type="text" onChange={handleChange} value={input} placeholder='Aggiungi una todo' />
+        <button className={styles.input_section_button} onClick={addTodo}>ADD</button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <ul className={styles.container_list}>
+        {todos.map((todo) => {
+          return (
+            <li key={todo.id} className={styles.list_item}>
+              {todo.title}
+              <button id={todo.id} className={styles.input_section_button + ' ' + styles.delete_button} onClick={deleteTodo}>DELETE</button>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+
   )
 }
 
